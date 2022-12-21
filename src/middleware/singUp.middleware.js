@@ -4,7 +4,7 @@ import { connection } from "../database/database.js";
 export async function singUpMD(req, res, next) {
 
     const { name, email, password, confirmPassword } = req.body;
-
+    console.log(name, email, password, confirmPassword)
     try {
 
         if(password !== confirmPassword){

@@ -6,7 +6,7 @@ import { singInMD } from "../middleware/singIn.middleware.js";
 
 const router = Router();
 
-router.post("/sing-up", singUpMD, postSingUp);
-router.post("/sing-in", singInMD, postSingIn);
+router.post("/signup", singUpMD, postSingUp);
+router.post("/signin", singInMD, postSingIn);
 
 export default router;

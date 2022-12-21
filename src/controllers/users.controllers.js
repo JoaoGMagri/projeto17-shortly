@@ -41,7 +41,6 @@ export async function getUsersMe(req, res) {
     }
 
 }
-
 export async function getRanking(req, res) {
 
     try {

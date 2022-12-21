@@ -1,10 +1,21 @@
 import {connection} from "../database/database.js";
 import { customAlphabet } from 'nanoid'
+import joi from "joi";
 
 export async function postShorten(req, res) {
 
     const {url} = req.body;
     const objSession =req.userExists;
+
+    const urlSchema = joi.object({
+        url: joi.string().required()
+    });
+
+    const validation = urlSchema.validate(req.body);
+    if (validation.error) {
+        return res.sendStatus(422);
+    }
+
     try {
 
         const nanoid = customAlphabet('1234567890abcdef', 6)

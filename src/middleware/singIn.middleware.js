@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import joi from "joi";
 
 import {connection} from "../database/database.js";
 
@@ -7,6 +8,16 @@ export async function singInMD(req, res, next) {
 
     const { email, password } = req.body;
     const token = uuidv4();
+
+    const signInSchema = joi.object({
+        email: joi.string().required(),
+        password: joi.string().required()
+    });
+
+    const validation = signInSchema.validate(req.body);
+    if (validation.error) {
+        return res.sendStatus(422);
+    }
 
     try {
         

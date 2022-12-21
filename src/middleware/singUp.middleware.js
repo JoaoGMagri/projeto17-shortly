@@ -1,10 +1,23 @@
 import bcrypt from 'bcrypt';
 import { connection } from "../database/database.js";
+import joi from "joi";
 
 export async function singUpMD(req, res, next) {
 
     const { name, email, password, confirmPassword } = req.body;
-    console.log(name, email, password, confirmPassword)
+    
+    const signUpSchema = joi.object({
+        name: joi.string().required(),
+        email: joi.string().required(),
+        password: joi.string().required(),
+        confirmPassword: joi.string().required()
+    });
+    
+    const validation = signUpSchema.validate(req.body);
+    if (validation.error) {
+        return res.sendStatus(422);
+    }
+
     try {
 
         if(password !== confirmPassword){

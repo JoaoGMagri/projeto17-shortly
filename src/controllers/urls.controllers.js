@@ -98,3 +98,44 @@ export async function getShortenOpen(req, res) {
     }
 
 }
+export async function deleteShorten(req, res) {
+
+    const {id} = req.params
+    const {idUser} =req.userExists.rows[0];
+
+    try {
+
+        const obj = await connection.query(`
+            SELECT 
+                *
+            FROM
+                urls 
+            WHERE
+                id=$1
+            ;
+        `,
+        [id]);
+
+        if(obj.rowCount === 0){
+            return res.sendStatus(404);
+        }
+        if(idUser !== obj.rows[0].idUser){
+            return res.sendStatus(401);
+        }
+
+        console.log(obj.rows);
+        await connection.query(`
+        DELETE FROM 
+            urls 
+        WHERE 
+            id=$1;
+        `,
+        [id]);
+        res.sendStatus(204);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+
+}

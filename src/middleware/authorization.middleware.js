@@ -7,7 +7,7 @@ export async function authorization(req, res, next) {
 
     try {
         const userExists = await connection.query(`SELECT * FROM session WHERE token=$1`, [token]);
-        console.log(userExists.rows);
+
         if(userExists.rowCount === 0) {
             return res.sendStatus(401);
         }

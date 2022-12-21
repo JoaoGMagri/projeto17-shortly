@@ -43,7 +43,54 @@ export async function getShorten(req, res) {
             ;
         `,
         [id]);
+
+        if(obj.rowCount === 0){
+            return res.sendStatus(404);
+        }
+
         res.send(obj.rows[0]).status(200);
+
+    } catch (error) {
+        console.log(error);
+        res.sendStatus(500);
+    }
+
+}
+export async function getShortenOpen(req, res) {
+
+    const {shortUrl} = req.params
+    
+    try {
+
+        const obj = await connection.query(`
+            SELECT 
+                id,
+                url 
+            FROM
+                urls 
+            WHERE
+                "shortUrl"=$1
+            ;
+        `,
+        [shortUrl]);
+        
+        if(obj.rowCount === 0){
+            return res.sendStatus(404);
+        }
+
+        await connection.query(`
+            UPDATE
+                urls
+            SET
+                "visitCount" = "visitCount"+1
+            WHERE
+                id=$1
+        `,
+        [obj.rows[0].id]);
+
+        console.log(obj.rows[0].url)
+
+        res.redirect(obj.rows[0].url);
 
     } catch (error) {
         console.log(error);

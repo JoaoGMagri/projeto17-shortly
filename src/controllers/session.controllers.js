@@ -34,7 +34,7 @@ export async function postSingIn(req, res) {
                 ($1, $2);
         `
         ,[token, userId]);
-        res.send(token);
+        res.send(token).status(200);
 
     } catch (error) {
         console.log(error);

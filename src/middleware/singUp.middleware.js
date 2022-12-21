@@ -8,12 +8,14 @@ export async function singUpMD(req, res, next) {
     try {
 
         if(password !== confirmPassword){
-            return res.status(422);
+            res.sendStatus(422);
+            return;
         }
 
-        const userExists = await connection.query("SELECT * FROM users WHERE email=$1", [email]);
-        if (userExists.rowCount !== 0) {
-            return res.status(409);
+        const userExists = await connection.query(`SELECT * FROM users WHERE email=$1`, [email]);
+        if (userExists.rowCount > 0) {
+            res.sendStatus(409);
+            return; 
         }
 
         const passwordCrypt = bcrypt.hashSync(password, 10);

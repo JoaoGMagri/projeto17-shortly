@@ -1,8 +1,7 @@
-/* // import de bibliotecas
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-//Import de arquivos
-import { collectionUsers, collectionSessions } from "../database/database.js";
+
+import {connection} from "../database/database.js";
 
 export async function singInMD(req, res, next) {
 
@@ -11,23 +10,25 @@ export async function singInMD(req, res, next) {
 
     try {
         
-        const userExists = await collectionUsers.findOne({ email });
-        if (!userExists) {
-            return res.status(401).send({ message: "Email not found" });
+        const userExists = await connection.query(`SELECT * FROM users WHERE email=$1`, [email]);
+        if (userExists.rowCount === 0) {
+            return res.sendStatus(401);
         }
 
-        const passwordOK = bcrypt.compareSync(password, userExists.password);
+        const passwordOK = bcrypt.compareSync(password, userExists.rows[0].password);
         if (!passwordOK) {
-            return res.status(401).send({ message: "Password not found" });
+            return res.sendStatus(401);
         }
 
-        const userSession = await collectionSessions.findOne({ userId: userExists._id });
-        if (userSession) {
-            return res.send(userSession.token);
+        const userSession = await connection.query(`SELECT * FROM session WHERE "idUser"=$1`, [userExists.rows[0].id]);
+        if (userSession.rowCount !== 0) {
+            return res.send(userSession.rows[0].token);
         }
 
-        const objSingIn = { token, userId: userExists._id }
-
+        const objSingIn = { 
+            token, 
+            userId: userExists.rows[0].id 
+        }
         req.objSingIn = objSingIn;
 
     } catch (error) {
@@ -37,4 +38,4 @@ export async function singInMD(req, res, next) {
 
     next();
 
-} */
+}
